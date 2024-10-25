@@ -11,6 +11,8 @@ config :users_api,
   ecto_repos: [UsersApi.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
+config :users_api, UsersApi.Repo, migration_primary_key: [type: :uuid]
+
 # Configures the endpoint
 config :users_api, UsersApiWeb.Endpoint,
   url: [host: "localhost"],
