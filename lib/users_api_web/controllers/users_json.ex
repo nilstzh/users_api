@@ -8,6 +8,10 @@ defmodule UsersApiWeb.UsersJSON do
     for(user <- users, do: data(user))
   end
 
+  def invite(%{total_count: total_count, errors: errors}) do
+    %{status: "success", succesfully_sent: total_count - Enum.count(errors), errors: errors}
+  end
+
   defp data(%User{} = user) do
     %{
       name: user.name,

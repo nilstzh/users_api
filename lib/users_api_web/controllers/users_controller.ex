@@ -10,8 +10,8 @@ defmodule UsersApiWeb.UsersController do
 
   def invite(conn, _params) do
     active_users_names = Enum.map(Users.list_active_users(), & &1.name)
-    Mailer.invite(active_users_names)
+    errors = Mailer.invite(active_users_names)
 
-    send_resp(conn, 200, "ok")
+    render(conn, :invite, total_count: Enum.count(active_users_names), errors: errors)
   end
 end

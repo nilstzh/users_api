@@ -24,10 +24,16 @@ defmodule UsersApi.Mailer do
   def invite(names) do
     names
     |> Task.async_stream(&send_invite_email(&1), max_concurrency: 5, timeout: 15_000)
-    |> Stream.run()
+    |> Enum.reduce([], fn result, acc ->
+      case result do
+        {:ok, {:error, name}} -> [%{name: name, error: "Connection Error"} | acc]
+        {:ok, _result} -> acc
+      end
+    end)
   end
 
-  @spec send_invite_email(String.t(), non_neg_integer()) :: nil
+  @spec send_invite_email(String.t(), non_neg_integer()) ::
+          {:ok, String.t()} | {:error, String.t()}
   defp send_invite_email(name, retries \\ 0)
 
   defp send_invite_email(name, retries) when retries < @max_retries do
@@ -36,14 +42,15 @@ defmodule UsersApi.Mailer do
         Logger.error("Failed to send email to #{name}, retrying... (#{retries + 1})")
         send_invite_email(name, retries + 1)
 
-      {:ok, _result} ->
-        nil
+      {:ok, name} ->
+        {:ok, name}
     end
   end
 
   @spec send_invite_email(String.t(), non_neg_integer()) :: nil
   defp send_invite_email(name, _retries) do
     Logger.error("Failed to send email to #{name} after #{@max_retries} retries")
+    {:error, name}
   end
 
   @spec client() :: atom()

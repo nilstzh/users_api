@@ -19,7 +19,7 @@ defmodule UsersApi.MailerTest do
 
     log =
       capture_log(fn ->
-        assert Mailer.invite(@names) == :ok
+        assert Mailer.invite(@names) == []
       end)
 
     assert log == ""
@@ -30,7 +30,7 @@ defmodule UsersApi.MailerTest do
 
     log =
       capture_log(fn ->
-        Mailer.invite(["Alice"])
+        assert Mailer.invite(["Alice"]) == [%{error: "Connection Error", name: "Alice"}]
       end)
 
     assert log =~ "Failed to send email to Alice, retrying... (1)"
@@ -48,7 +48,7 @@ defmodule UsersApi.MailerTest do
 
     log =
       capture_log(fn ->
-        Mailer.invite(@names)
+        assert Mailer.invite(@names) == [%{error: "Connection Error", name: "Bob"}]
       end)
 
     assert log =~ "Failed to send email to Bob, retrying... (1)"
