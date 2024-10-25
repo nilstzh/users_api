@@ -9,5 +9,6 @@ defmodule UsersApiWeb.Router do
     pipe_through :api
 
     get "/users", UsersController, :index
+    post "/invite-users", UsersController, :invite
   end
 end

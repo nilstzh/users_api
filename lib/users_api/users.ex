@@ -35,6 +35,21 @@ defmodule UsersApi.Users do
     |> Enum.sort_by(& &1.name)
   end
 
+  @doc """
+  Returns the list of users who currently have an active salary.
+
+  ## Examples
+
+    iex> list_active_users()
+    [%User{}, ...]
+  """
+  def list_active_users() do
+    User
+    |> join(:inner, [u], s in assoc(u, :salaries))
+    |> where([u, s], s.state == :active)
+    |> Repo.all()
+  end
+
   defp find_name(nil), do: dynamic(true)
   defp find_name(name), do: dynamic([u], ilike(u.name, ^"%#{name}%"))
 end
