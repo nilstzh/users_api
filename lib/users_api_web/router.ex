@@ -7,5 +7,7 @@ defmodule UsersApiWeb.Router do
 
   scope "/api", UsersApiWeb do
     pipe_through :api
+
+    get "/users", UsersController, :index
   end
 end
